@@ -1,11 +1,11 @@
 import { Comparable } from "./Comparable";
 
 export class Item implements Comparable<Item> {
-  static idCounter: number;
-  readonly name: string;
+  public static idCounter: number;
+  public readonly name: string;
   public value: number;
   public weight: number;
-  readonly id: number;
+  private readonly id: number;
 
   constructor(name: string, value: number, weight: number) {
     this.name = name;
