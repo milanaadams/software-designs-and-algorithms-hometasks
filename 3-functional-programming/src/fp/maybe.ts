@@ -27,14 +27,8 @@ export const none: Readonly<None> = {
 /**
  * Create a Maybe instance form the value. If value(T) is nullable(null or undefined), returns None, otherwise it returns Some<T>
  */
-export const fromNullable = <T>(value: T) => {
-  if(value === null || value === undefined) {
-    return none;
-  } else {
-    return some(value);
-  }
-
-};
+export const fromNullable = <T>(value: T) =>
+  value === null || value === undefined ? none : some(value);
 
 /**
  * Get the value from Some, or returns the result of onNone
