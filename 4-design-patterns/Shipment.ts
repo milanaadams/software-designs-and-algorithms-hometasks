@@ -9,6 +9,12 @@ export interface ShipmentData {
   toZipCode: string;
 }
 
+export enum ShipmentType {
+  LETTER = 'Letter',
+  PACKAGE = 'Packages',
+  OVERSIZE = 'Oversize',
+}
+
 export class Shipment {
   private static shipmentInstance: Shipment;
   private static shipmentCounter: number = 0;
@@ -21,7 +27,7 @@ export class Shipment {
   private toAddress: string;
   private toZipCode: string;
 
-  private constructor(shipmentData: ShipmentData) {
+  protected constructor(shipmentData: ShipmentData) {
     this.shipmentID = shipmentData.shipmentID || this.getShipmentID();
     this.weight = shipmentData.weight;
     this.fromAddress = shipmentData.fromAddress;
@@ -32,7 +38,13 @@ export class Shipment {
 
   public static getInstance(shipmentData: ShipmentData): Shipment {
     if(!Shipment.shipmentInstance) {
-      Shipment.shipmentInstance = new Shipment(shipmentData);
+      if(shipmentData.weight <= 15) {
+        Shipment.shipmentInstance = new Letter(shipmentData);
+      } else if(shipmentData.weight <= 160) {
+        Shipment.shipmentInstance = new Package(shipmentData);
+      } else {
+        Shipment.shipmentInstance = new Oversize(shipmentData);
+      }
     }
 
     return this.shipmentInstance;
@@ -46,9 +58,41 @@ export class Shipment {
     const shipper = new Shipper(this.fromZipCode);
     return `
       id: ${this.shipmentID}
-      cost: ${this.weight * shipper.getCost()}
+      cost: ${shipper.getCost(this)}
       from: ${this.fromZipCode} ${this.fromAddress}
       to: ${this.toZipCode} ${this.toAddress}
       `
+  }
+
+  public getShipmentType(): ShipmentType {
+    if(this.weight <= 15) {
+      return ShipmentType.LETTER;
+    } else if(this.weight <= 160) {
+      return ShipmentType.PACKAGE;
+    } else {
+      return ShipmentType.OVERSIZE;
     }
+  }
+
+  public getShipmentWeight(): number {
+    return this.weight;
+  }
+}
+
+export class Letter extends Shipment {
+  constructor(shipmentData: ShipmentData) {
+      super(shipmentData);
+  }
+}
+
+export class Package extends Shipment {
+  constructor(shipmentData: ShipmentData) {
+      super(shipmentData);
+  }
+}
+
+export class Oversize extends Shipment {
+  constructor(shipmentData: ShipmentData) {
+      super(shipmentData);
+  }
 }

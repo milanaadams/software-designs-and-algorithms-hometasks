@@ -1,8 +1,8 @@
-import { Shipment } from './Shipment';
+import { Shipment, ShipmentType } from './Shipment';
 
 interface IShipper {
   getInstance(): AirEastShipper | ChicagoSprintShipper | PacificParcelShipper;
-  getCost(): number;
+  getCost(shipment: Shipment): number;
 }
 
 export class Shipper implements IShipper {
@@ -35,8 +35,8 @@ export class Shipper implements IShipper {
     return this.shipperInstance;
   }
 
-  public getCost() {
-    return this.shipperInstance.getCost();
+  public getCost(shipment: Shipment) {
+    return this.shipperInstance.getCost(shipment.getShipmentType(), shipment.getShipmentWeight());
   }
 }
 
@@ -45,7 +45,10 @@ class AirEastShipper {
 
   private name = 'Air East';
   private location = 'Atlanta';
-  private rate = 0.39;
+
+  private letterRate = 0.39;
+  private packageRate = 0.25;
+  private oversizedFlatFee = 10;
 
   private constructor() {
   }
@@ -58,8 +61,15 @@ class AirEastShipper {
     return AirEastShipper.instance;
   }
 
-  public getCost() {
-    return this.rate;
+  public getCost(type: ShipmentType, weight: number) {
+    switch(type) {
+      case ShipmentType.LETTER:
+        return weight * this.letterRate;
+      case ShipmentType.PACKAGE:
+        return weight * this.packageRate;
+      default:
+        return weight * this.packageRate + 10;
+    }
   }
 }
 
@@ -68,7 +78,9 @@ class ChicagoSprintShipper {
 
   private name = 'Chicago Sprint';
   private location = 'Chicago';
-  private rate = 0.42;
+  
+  private letterRate = 0.42;
+  private packageRate = 0.20;
 
   private constructor() {
   }
@@ -81,8 +93,13 @@ class ChicagoSprintShipper {
     return ChicagoSprintShipper.instance;
   }
 
-  public getCost() {
-    return this.rate;
+  public getCost(type: ShipmentType, weight: number) {
+    switch(type) {
+      case ShipmentType.LETTER:
+        return weight * this.letterRate;
+      default:
+        return weight * this.packageRate;
+    }
   }
 
 }
@@ -92,7 +109,10 @@ class PacificParcelShipper {
 
   private name = 'Pacific Parcel';
   private location = 'San Diego';
-  private rate = 0.51;
+  
+  private letterRate = 0.51;
+  private packageRate = 0.19;
+  private oversizedAdditionalRate = 0.02;
 
   private constructor() {
   }
@@ -105,7 +125,14 @@ class PacificParcelShipper {
     return PacificParcelShipper.instance;
   }
 
-  public getCost() {
-    return this.rate;
+  public getCost(type: ShipmentType, weight: number) {
+    switch(type) {
+      case ShipmentType.LETTER:
+        return weight * this.letterRate;
+      case ShipmentType.PACKAGE:
+        return weight * this.packageRate;
+      default:
+        return weight * (this.packageRate + this.oversizedAdditionalRate);
+    }
   }
 }
