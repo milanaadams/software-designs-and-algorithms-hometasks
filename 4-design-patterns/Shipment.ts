@@ -1,3 +1,5 @@
+import { Shipper } from "./Shipper";
+
 export interface ShipmentData {
   shipmentID: number;
   weight: number;
@@ -41,9 +43,10 @@ export class Shipment {
   }
 
   public ship() {
+    const shipper = new Shipper(this.fromZipCode);
     return `
       id: ${this.shipmentID}
-      cost: ${this.weight * this.rate}
+      cost: ${this.weight * shipper.getCost()}
       from: ${this.fromZipCode} ${this.fromAddress}
       to: ${this.toZipCode} ${this.toAddress}
       `
