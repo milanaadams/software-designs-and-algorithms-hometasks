@@ -1,10 +1,12 @@
-import { Shipment, ShipmentData } from "./Shipment";
+import { Shipment, ShipmentData,  } from "./Shipment";
+import { ShipmentDecorator } from "./ShipmentDecorator";
+import { IShipment } from "./Shipment";
 
 export class Client {
-  private shipment: Shipment;
+  private shipment: IShipment;
 
   constructor(private data: ShipmentData) {
-    this.shipment = Shipment.getInstance(this.data);
+    this.shipment = new ShipmentDecorator(Shipment.getInstance(data));
   }
 
   public createShipment() {

@@ -7,6 +7,9 @@ export interface ShipmentData {
   fromZipCode: string;
   toAddress: string;
   toZipCode: string;
+  isFragile: boolean;
+  isNotLeave: boolean;
+  isReceipt: boolean;
 }
 
 export enum ShipmentType {
@@ -15,17 +18,23 @@ export enum ShipmentType {
   OVERSIZE = 'Oversize',
 }
 
-export class Shipment {
-  private static shipmentInstance: Shipment;
-  private static shipmentCounter: number = 0;
-  private rate: number = 0.39;
+export interface IShipment {
+  ship(): string;
+}
 
-  private shipmentID: number;
-  private weight: number;
-  private fromAddress: string;
-  private fromZipCode: string;
-  private toAddress: string;
-  private toZipCode: string;
+export class Shipment implements IShipment {
+  private static  shipmentInstance: Shipment;
+  private static shipmentCounter: number = 0;
+
+  protected shipmentID: number;
+  protected weight: number;
+  protected fromAddress: string;
+  protected fromZipCode: string;
+  protected toAddress: string;
+  protected toZipCode: string;
+  protected isFragile: boolean;
+  protected isNotLeave: boolean;
+  protected isReceipt: boolean;
 
   protected constructor(shipmentData: ShipmentData) {
     this.shipmentID = shipmentData.shipmentID || this.getShipmentID();
@@ -34,6 +43,9 @@ export class Shipment {
     this.fromZipCode = shipmentData.fromZipCode;
     this.toAddress = shipmentData.toAddress;
     this.toZipCode = shipmentData.toZipCode;
+    this.isFragile = shipmentData.isFragile;
+    this.isNotLeave = shipmentData.isNotLeave;
+    this.isReceipt = shipmentData.isReceipt;
   }
 
   public static getInstance(shipmentData: ShipmentData): Shipment {
@@ -60,8 +72,7 @@ export class Shipment {
       id: ${this.shipmentID}
       cost: ${shipper.getCost(this)}
       from: ${this.fromZipCode} ${this.fromAddress}
-      to: ${this.toZipCode} ${this.toAddress}
-      `
+      to: ${this.toZipCode} ${this.toAddress}`
   }
 
   public getShipmentType(): ShipmentType {
@@ -76,6 +87,14 @@ export class Shipment {
 
   public getShipmentWeight(): number {
     return this.weight;
+  }
+
+  public getSpecialMarks(): {isFragile: boolean, isNotLeave: boolean, isReceipt: boolean} {
+    return {
+      isFragile: this.isFragile,
+      isNotLeave: this.isNotLeave,
+      isReceipt: this.isReceipt
+    }
   }
 }
 
