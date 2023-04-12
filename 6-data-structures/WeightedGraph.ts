@@ -1,25 +1,27 @@
 import { Vertex } from "./Vertex";
 import { Edge } from "./Edge";
 
+import { Dijkstra } from "./Dijkstra";
+
 interface WeightedGraph<T> {
   addVertex(key: string): void;
   addEdge(vertex1: T, vertex2: T, weight: number): void;
 }
 
 export class Graph implements WeightedGraph<Vertex> {
-  adjacentList: object;
+  adjacencyList: object;
 
   constructor() {
-    this.adjacentList = {};
+    this.adjacencyList = {};
   }
 
   addVertex(key: string): void {
-    this.adjacentList[key] = {};
+    this.adjacencyList[key] = {};
   }
 
   addEdge(from: Vertex, to: Vertex, weight: number): void {
-    this.adjacentList[from.key][to.key] = weight;
-    this.adjacentList[to.key][from.key] = weight;
+    this.adjacencyList[from.key][to.key] = weight;
+    this.adjacencyList[to.key][from.key] = weight;
   }
 }
 
@@ -49,4 +51,11 @@ const graph: Graph = new Graph;
 vertices.forEach(verticle => graph.addVertex(verticle.key));
 edges.forEach(edge => graph.addEdge(edge.from, edge.to, edge.weight));
 
-console.log(graph.adjacentList);
+const dijkstra: Dijkstra = new Dijkstra(graph);
+
+console.log(graph.adjacencyList);
+console.log(dijkstra.findShortestPath(vertex4, vertex3));
+console.log(dijkstra.findShortestPath(vertex1, vertex5));
+console.log(dijkstra.findShortestPath(vertex1, vertex1));
+console.log('--------------------')
+console.log(dijkstra.findAllShortestPaths(vertex4));
