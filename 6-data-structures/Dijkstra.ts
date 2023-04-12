@@ -16,87 +16,89 @@ export class Dijkstra implements IDijkstra<Vertex> {
     this.graph = graph;
   }
 
-  private getShortestDistanceNode = (distances: {}, visited: string[]) => {
-		let shortest: string | null = null;
+ private getShortestDistanceNode = (distances: {}, visited: string[]) => {
+	  let shortest: string | null = null;
 
-		for (let node in distances) {
+	  for (let node in distances) {
 			let isShortest = shortest === null || distances[node] < distances[shortest];
 			if (isShortest && !visited.includes(node)) {
 				shortest = node;
 			}
 		}
+
 		return shortest;
 	};
 
-	public findShortestPath(vertex1: Vertex, vertex2: Vertex) {
-		let distance = Infinity;
-		let path: null | string[] = [];
+  public findShortestPath(vertex1: Vertex, vertex2: Vertex) {
+    let distance = Infinity;
+    let path: null | string[] = [];
 
-		const start = vertex1.key;
-		const end = vertex2.key;
+    const start = vertex1.key;
+    const end = vertex2.key;
 
-		let visited: string[] = [];
-		let distances = {};
+    let visited: string[] = [];
+    let distances = {};
 
-		distances[end] = 'Infinity';
-		distances = Object.assign(distances, this.graph.adjacencyList[start]);
+    distances[end] = 'Infinity';
+    distances = Object.assign(distances, this.graph.adjacencyList[start]);
 
-		if (start === end) {
-			path = [end];
-			distance = 0;
-			return { path: path, distance: distance };
-		}
+    if (start === end) {
+      path = [end];
+      distance = 0;
 
-		let parents = { endNode: null };
-		for (let child in this.graph.adjacencyList[start]) {
-			parents[child] = start;
-		}
+      return { path: path, distance: distance };
+    }
 
-		let node = this.getShortestDistanceNode(distances, visited);
+    let parents = { endNode: null };
+    for (let child in this.graph.adjacencyList[start]) {
+      parents[child] = start;
+    }
 
-		while (node) {
-			let nodeDistance = distances[node];
-			let children = this.graph.adjacencyList[node];
+    let node = this.getShortestDistanceNode(distances, visited);
 
-			for (let child in children) {
-				if (child === start) {
-					continue;
-				} else {
-					let newDistance = nodeDistance + children[child];
+    while (node) {
+      let nodeDistance = distances[node];
+      let children = this.graph.adjacencyList[node];
 
-					if (!distances[child] || distances[child] > newDistance) {
-						distances[child] = newDistance;
-						parents[child] = node;
-            distance = newDistance;
-					}
-				}
-			}
-			visited.push(node);
-			node = this.getShortestDistanceNode(distances, visited);
-		}
+      for (let child in children) {
+      if (child === start) {
+        continue;
+      } else {
+        let newDistance = nodeDistance + children[child];
 
-		let shortestPath: string[];
+        if (!distances[child] || distances[child] > newDistance) {
+          distances[child] = newDistance;
+          parents[child] = node;
+          distance = newDistance;
+        }
+      }
+      }
+      visited.push(node);
+      node = this.getShortestDistanceNode(distances, visited);
+    }
 
-		if (distance === Infinity) {
-			shortestPath = [];
-			return { path: shortestPath, distance: distances[end] };
-		} else {
-			shortestPath = [end];
-		}
+    let shortestPath: string[];
 
-		let parent = parents[end];
-		while (parent) {
-			shortestPath.push(parent);
-			parent = parents[parent];
-		}
+    if (distance === Infinity) {
+      shortestPath = [];
+      return { path: shortestPath, distance: distances[end] };
+    } else {
+      shortestPath = [end];
+    }
 
-		shortestPath.reverse();
+    let parent = parents[end];
+    while (parent) {
+      shortestPath.push(parent);
+      parent = parents[parent];
+    }
 
-		return { path: shortestPath, distance: distances[end] };
-	}
+    shortestPath.reverse();
 
-	public findAllShortestPaths(vertex: Vertex): Record<string, Path> {
-		const res = {};
+    return { path: shortestPath, distance: distances[end] };
+  }
+
+  public findAllShortestPaths(vertex: Vertex): Record<string, Path> {
+    const res = {};
     for (let i in this.graph.adjacencyList) {
       if (vertex.key !== i) {
         res[i] = this.findShortestPath(vertex, new Vertex(i)) as Path
