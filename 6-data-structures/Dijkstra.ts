@@ -17,16 +17,17 @@ export class Dijkstra implements IDijkstra<Vertex> {
   }
 
  private getShortestDistanceNode = (distances: {}, visited: string[]) => {
-	  let shortest: string | null = null;
+  let shortest: string | null = null;
 
-	  for (let node in distances) {
-			let isShortest = shortest === null || distances[node] < distances[shortest];
-			if (isShortest && !visited.includes(node)) {
-				shortest = node;
-			}
-		}
+  for (let node in distances) {
+    let isShortest = shortest === null || distances[node] < distances[shortest];
 
-		return shortest;
+    if (isShortest && !visited.includes(node)) {
+      shortest = node;
+    }
+  }
+
+  return shortest;
 	};
 
   public findShortestPath(vertex1: Vertex, vertex2: Vertex) {
